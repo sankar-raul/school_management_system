@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add student</title>
+</head>
+<body>
+    <form action="/students/add">
+        <h1 class="title">Add Student</h1>
+        <div class="box">
+        <label for="name">Student name* </label>
+        <input type="text" name="name" id="name" required /> 
+        </div>
+        <br>
+        <div class="box">
+        <label for="registration_no">Registration no.* </label>
+        <input type="text" name="registration_no" id="registration_no" required />
+        </div>
+        <br>
+        <div class="box">
+        <label for="dept">Depertment </label>
+        <select name="dept" id="dept">
+        <option value="BCA">BCA</option>
+        <option value="BBA">BBA</option>
+        <option value="MBA">MBA</option>
+        </select>
+        </div>
+        <br>
+        <div class="box">
+        <label for="section">Section </label>
+        <select name="section" id="section">
+            <option value="BCA 2.2">BCA 2.2</option>
+            <option value="BCA 2.1">BCA 2.1</option>
+            <option value="BCA 2.3">BCA 2.3</option>
+            <option value="BBA 2.1">BBA 2.1</option>
+            <option value="BBA 2.2">BBA 2.2</option>
+            <option value="BBA 2.3">BBA 2.3</option>
+            </select>
+        </div>
+        <br>
+        <div class="box">
+        <label for="roll_no">Roll no* </label>
+        <input type="text" name="roll_no" id="roll_no" required/>
+        </div>
+        <br>
+        <input type="submit" value="Add Student">
+    </form>
+</body>
+</html>

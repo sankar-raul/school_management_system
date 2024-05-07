@@ -1,0 +1,78 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+::spelling-error {
+    text-decoration: none;
+}
+::selection {
+    background: #60ff0a65;
+}
+body {
+    height: 100dvh;
+    display: grid;
+    place-items: center;
+}
+form {
+    border: 1px solid transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: clamp(30px, 100%, 450px);
+    border-radius: 10px;
+    padding: 30px 0px;
+    position: relative;
+    box-shadow: 11px 11px 300px 0px rgba(0, 0, 0, 0.073), -11px -11px 300px 0px rgba(95, 162, 220, 0.115);
+}
+form .box input, form .box select {
+    height: 40px;
+    border-radius: 10px;
+    width: 100%;
+    border: 1px solid transparent;
+    font-size: 17px;
+    margin: auto auto;
+    padding-left: 8px;
+    background: #3284ff0b;
+}
+form .box select {
+   padding-left: 5px;
+}
+form .box input:focus {
+    outline: 1px solid rgba(31, 141, 244, 0.271);
+    background: rgba(137, 200, 236, 0.032);
+}
+input[type="submit"] {
+    background: #12121215;
+    color: rgb(11, 11, 11);
+    border: 1px solid transparent;
+    width: 80%;
+    height: 40px;
+    border-radius: 10px;
+    transition: 1s;
+    cursor: pointer;
+}
+input[type="submit"]:hover {
+    background: #121212dd;
+    transition-duration: .2s;
+    color: rgb(255, 255, 255);
+    box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.173), -7px -7px 30px 0px rgba(95, 162, 220, 0.215);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+form .box {
+    height: 46px;
+    width: 80%;
+    margin-bottom: 10px;
+}
+form .box label {
+  
+}
+form .box input:hover, form .box select:hover {
+    background: rgba(137, 200, 236, 0.032);
+}
+form .title {
+    padding-bottom: 30px;
+    font-family: 'Times New Roman', Times, serif;
+    color: rgb(3, 47, 50);
+}
