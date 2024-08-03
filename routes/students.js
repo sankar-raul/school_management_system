@@ -6,9 +6,9 @@ Router.get("/", (request, response) => {
     response.sendFile(path.join(__dirname, "../static/addStudents.html"))
   })
   Router.get("/add", (req, res) => {
-    const {name, section, registration_no, dept, roll_no} = req.query
-    if(name && section && registration_no && dept && roll_no) {
-        db.query("insert into students (name, section, registration_no, dept, roll_no) values (?, ?, ?, ?, ?)", [name, section, registration_no, dept, roll_no], (error, result) => {
+    const {name, dept, year, reg_date} = req.query
+    if(name && dept) {
+        db.query("insert into students (S_name, registration_no, dept, roll_no) values (?, ?, ?, ?, ?)", [name, section, registration_no, dept, roll_no], (error, result) => {
             if (!error) {
                 res.redirect("/students")
             } else {
