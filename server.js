@@ -16,7 +16,7 @@ app.use((req, res, next) => {
     req.cookies.keys = cookies;
     console.log(req.cookies)
     let isLogedin = false
-    if (req.cookies.u_id) {
+    if (req.cookies.u_id && req.cookies.security_key) {
         isLogedin = true
     }
     req.isLogedin = isLogedin
