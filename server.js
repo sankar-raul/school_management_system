@@ -2,7 +2,7 @@ const express = require("express")
 const app = express()
 require("dotenv").config()
 const cookieParser = require('cookie-parser')
-const port = process.env.port || 8080
+const port = process.env.PORT || 8080
 const students = require("./routes/students")
 const home = require('./routes/home')
 const dashboard = require('./routes/dashboard')
