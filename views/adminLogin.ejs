@@ -6,6 +6,36 @@
     <title>Admin</title>
 </head>
 <body>
-    Admin Login
+    <form>
+        <h2>Admin Login</h2>
+        <label for="email">Email </label>
+        <input id="email" type="email" required placeholder="email"><br>
+        <label for="password">Password</label>
+        <input id="password" type="password" required placeholder="Password"><br>
+        <input type="submit" value="Login">
+    </form>
+<script type="text/javascript">
+    const form = document.querySelector('form')
+    form.onsubmit = async (e) => {
+        e.preventDefault()
+        const email = form[0].value, password = form[1].value
+        const response = await login(email, password)
+        if (response == 'refresh') {
+            window.location.reload()
+        } else {
+            alert(response)
+        }
+    }
+    const login = async (email, password) => {
+        const response = await fetch('/dashboard/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        })
+        return await response.text()
+    }
+</script>
 </body>
 </html>
