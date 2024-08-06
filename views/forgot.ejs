@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password</title>
+</head>
+<body>
+    <h1><%= u_type %> forgot password</h1>
+    <form>
+        <label for="email"><%= u_type %> email </label>
+        <input type="email" id="email" placeholder="<%= u_type %> email" required><br>
+        <input type="submit" value="Forgot">
+    </form>
+    <script type="text/javascript">
+        const form = document.querySelector('form')
+        form.onsubmit = async (e) => {
+            e.preventDefault()
+            console.log(form[0].value)
+        }
+    </script>
+</body>
+</html>

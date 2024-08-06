@@ -7,21 +7,12 @@ const students = require("./routes/students")
 const home = require('./routes/home')
 const dashboard = require('./routes/dashboard')
 const faculties = require('./routes/faculties')
+const cookieCheck = require('./functions/cookieCheck')
 app.use(cookieParser())
 app.use(express.json())
 app.set('view engine', 'ejs')
 app.use(express.static("public"))
-app.use((req, res, next) => {
-    const cookies = Object.keys(req.cookies)
-    req.cookies.keys = cookies;
-    console.log(req.cookies)
-    let isLogedin = false
-    if (req.cookies.u_id && req.cookies.security_key) {
-        isLogedin = true
-    }
-    req.isLogedin = isLogedin
-    next()
-})
+app.use(cookieCheck)
 app.use('/', home)
 app.use("/students", students)
 app.use('/dashboard', dashboard)

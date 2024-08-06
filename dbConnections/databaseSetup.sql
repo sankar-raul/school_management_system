@@ -1,4 +1,4 @@
-create database school;
+create database if not exists school;
 use school;
 -- drop table results;
 
@@ -16,7 +16,7 @@ use school;
 --  drop table faculties;
 --  drop table students;
 --  drop table department;
-create table faculties (
+create table if not exists faculties (
 	f_id int primary key default 1,
 	f_name varchar(255) not null,
     u_id varchar(20) unique,
@@ -42,7 +42,7 @@ begin
 end;
 // 
 delimiter ;
-create table department (
+create table if not exists department (
 	dept_id int primary key default 1,
     dept_name varchar(255) unique,
     duration int default 3,
@@ -64,7 +64,7 @@ delimiter ;
 select * from faculties;
 -- truncate table faculties;
 -- drop table department;
- create table students (
+ create table if not exists students (
     s_id int primary key default 1,
     s_name varchar(40) not null,
     reg_no varchar(30),
@@ -97,7 +97,7 @@ END;
 // 
 delimiter ;
 create index idx_reg_no on students (reg_no);
-create table results (
+create table if not exists results (
 	id int auto_increment primary key,
 	reg_no varchar(30) not null,
     marks json not null, -- {"english": 87, "math": 89, "geography": 78}
@@ -139,26 +139,73 @@ select * from faculties;
 select * from results;
 -- update department set hod_id = 3 where dept_name = 'BCA';
 -- update department set hod_id = 4 where dept_name = 'BBA';
-truncate table students;
+-- truncate table students;
 # describe students;
 # SELECT COALESCE(3, 0) + 1 AS result;
 
 -- admin
-create table admin (
+create table if not exists admin (
 	email varchar(30) primary key,
     password varchar(255) not null
 );
-insert into admin (email, password) value ('sankar@sankar.tech', '!@#$%^&*()_+');
+insert into admin (email, password) values ('sankar@sankar.tech', 'admin'), ('sankar@sankarraul.me', 'admin');
 select * from admin;
 
 -- session cookie management
-create table sessions (
+create table if not exists sessions (
 	u_id varchar(255) not null,
+    valid_till int not null,
     security_key varchar(255) not null,
     u_type varchar(30) not null,
-    expiry date not null,
+    expiry datetime,
     primary key (u_id, security_key)
 );
-drop table sessions;
-insert into sessions (u_id, security_key, u_type, expiry) values ('9382613492','qwertyuiop', 'student','2024-08-20');
+-- drop trigger before_insert_sessions;
 select * from sessions;
+delimiter //
+create trigger before_insert_sessions
+before insert on sessions
+for each row
+begin
+	set new.expiry = date_add(Now(), interval new.valid_till minute);
+end;
+//
+delimiter ;
+-- delete expired sessions cookie
+create event if not exists delete_expired_session_cookie
+	on schedule every 3 minute
+    do
+		delete from sessions where expiry < Now();
+-- drop event if exists  delete_expired_session_cookie;
+-- drop table sessions;
+-- truncate table sessions;
+-- insert into sessions (u_id, security_key, u_type, valid_till) values ('9382613492','qwertyuiop', 'student',1);
+select expiry, Now() from sessions;
+-- select Now() as Now, date_add(Now(), interval 2 minute);
+
+-- forget password
+create table otp (
+	u_id varchar(50) primary key,
+    code char(7) not null,
+    expiry datetime
+);
+select * from otp;
+-- insert into otp (u_id, code) values ('sankar@sankarraul.me', '232421');
+delimiter //
+create trigger before_insert_otp
+before insert on otp
+for each row
+begin
+	set new.expiry = date_add(Now(), interval 1 minute);
+end;
+//
+delimiter ;
+create event delete_expired_otp
+on schedule every 1 minute
+do
+	delete from otp where expiry < Now();
+select * from sessions;
+select * from students;
+select * from faculties;
+select * from department;
+select * from results;

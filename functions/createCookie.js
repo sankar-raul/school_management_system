@@ -12,14 +12,14 @@ const createCookie = async ({u_id, u_type, ex = 10}) => {
         console.log("u_id and u_type required!")
         return 'required'
     }
-    ex = ex * 60000
     const newSecurityKey = newKey()
-    db.query(`insert into sessions (u_id, security_key, u_type, expiry) values (?, ?, ?, ?)`, [u_id, newSecurityKey, u_type, new Date(Date.now() + ex)], (error, result) => {
+    db.query(`insert into sessions (u_id, valid_till,security_key, u_type) values (?, ?, ?, ?)`, [u_id, ex, newSecurityKey, u_type], (error, result) => {
         if (error) {
             console.log(error, `Error ocurred at -> insert into sessions`)
             return 'error'
         }
     })
+    ex = ex * 60000
     return {newSecurityKey, u_id, ex}
 }
 module.exports = createCookie
