@@ -8,13 +8,14 @@ const dashLoginPost = (req, res) => {
     if (!email || !password) {
         return res.status(502).send('email and password is required!')
     }
-    db.query(`select password from admin where email = '${email}'`, async (error, result) => {
+    db.query(`select password from admin where email = ? AND password = ?`, [email, password], async (error, result) => {
         if (error) {
             console.log(error)
             return res.status(500).send('data fetching error!')
         }
-        if (result == 0) return res.status(401).send('Account not Found!')
-        if (result[0].password == password) {
+        if (!result[0]) 
+            return res.status(401).send('Account not Found!')
+        if (result[0]) {
             const status = await createCookie({u_id: email, u_type: 'admin', ex: 10})
             if (status == 'error') return res.status(500).send('cookie inserting error!')
                 console.log(status)

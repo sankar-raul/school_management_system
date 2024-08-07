@@ -10,13 +10,44 @@
     <form>
         <label for="email"><%= u_type %> email </label>
         <input type="email" id="email" placeholder="<%= u_type %> email" required><br>
-        <input type="submit" value="Forgot">
+        <input type="submit" value="Request for Otp">
+    </form>
+    <br>
+    <form>
+        <label for="otp">Enter otp</label>
+        <input type="number" id="otp" placeholder="enter otp" required>
+        <input type="submit" value="Varify">
     </form>
     <script type="text/javascript">
-        const form = document.querySelector('form')
-        form.onsubmit = async (e) => {
+        const form = document.querySelectorAll('form')
+        let lastReqemail = ''
+        form[0].onsubmit = async (e) => {
             e.preventDefault()
-            console.log(form[0].value)
+            lastReqemail = form[0].querySelector('input').value
+            console.log(lastReqemail);
+            const result = await forgot(form[0].querySelector('input').value)
+            alert(result)
+        }
+        const forgot = async (email) => {
+            const response = await fetch('/dashboard/forgot', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email: email, u_type: '<%= u_type.toLowerCase() %>'})
+            })
+            return response.text()
+        }
+        const varify = async (email, otp) => {
+            const response = await fetch('/dashboard/forgot/varify', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email: email, u_type: '<%= u_type.toLowerCase() %>', otp: otp})
+            })
+            return response.text()
+        }
+        form[1].onsubmit = async (e) => {
+            e.preventDefault()
+            const result = await varify(lastReqemail, form[1].querySelector('input').value)
+            alert(result)
         }
     </script>
 </body>
