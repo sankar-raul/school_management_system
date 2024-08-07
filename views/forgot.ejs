@@ -15,8 +15,12 @@
     <br>
     <form>
         <label for="otp">Enter otp</label>
-        <input type="number" id="otp" placeholder="enter otp" required>
-        <input type="submit" value="Varify">
+        <input type="number" id="otp" placeholder="enter otp" required><br>
+        <label for="newPassword">New Password </label>
+        <input type="password" id="newPassword" placeholder="enter new password" required> <br>
+        <label for="newPassword">Confirm Password </label>
+        <input type="password" id="confirmPassword" placeholder="re-enter new password" required> <br>
+        <input type="submit" value="Change Password">
     </form>
     <script type="text/javascript">
         const form = document.querySelectorAll('form')
@@ -36,18 +40,25 @@
             })
             return response.text()
         }
-        const varify = async (email, otp) => {
+        const varify = async (email, otp, newPassword) => {
             const response = await fetch('/dashboard/forgot/varify', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email: email, u_type: '<%= u_type.toLowerCase() %>', otp: otp})
+                body: JSON.stringify({email: email, u_type: '<%= u_type.toLowerCase() %>', otp: otp, newPassword: newPassword})
             })
             return response.text()
         }
         form[1].onsubmit = async (e) => {
             e.preventDefault()
-            const result = await varify(lastReqemail, form[1].querySelector('input').value)
-            alert(result)
+            if (form[1].querySelectorAll('input')[1].value ==  form[1].querySelectorAll('input')[2].value) {
+                const result = await varify(lastReqemail, form[1].querySelectorAll('input')[0].value,  form[1].querySelectorAll('input')[1].value)
+                alert(result)
+                if (result == 'Password Changed!') {
+                    window.location.reload()
+                }
+            } else {
+                alert('Passwords does not match!')
+            }
         }
     </script>
 </body>

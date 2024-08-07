@@ -190,16 +190,18 @@ create table otp (
     expiry datetime
 );
 select * from otp;
+truncate table otp;
 -- insert into otp (u_id, code) values ('sankar@sankarraul.me', '232421');
 delimiter //
 create trigger before_insert_otp
 before insert on otp
 for each row
 begin
-	set new.expiry = date_add(Now(), interval 1 minute);
+	set new.expiry = date_add(Now(), interval 10 minute);
 end;
 //
 delimiter ;
+select * from otp;
 create event delete_expired_otp
 on schedule every 1 minute
 do
