@@ -1,6 +1,4 @@
 # Logs
-functions/sendMail.js
-functions/mailTransporter.js
 logs
 *.log
 npm-debug.log*
