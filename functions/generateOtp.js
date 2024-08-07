@@ -5,5 +5,4 @@ const generateOtp = (length = 6) => {
     }
     return otp
 }
-console.log(generateOtp())
 module.exports = generateOtp
