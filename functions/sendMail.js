@@ -1,13 +1,5 @@
-const nodemailer = require('nodemailer')
-let transporter = nodemailer.createTransport({
-    host: 'us2.smtp.mailhostbox.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: 'sankar@sankar.tech',
-      pass: '@@@@Sankar1@@@@'
-    }
-  });
+const transporter = require('./mailTransporter')
+require('dotenv').config()
 const sendMail = (data, subject = null) => {
     console.log(subject)
     return new Promise((resolve, reject) => {
