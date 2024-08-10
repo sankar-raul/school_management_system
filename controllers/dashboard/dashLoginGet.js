@@ -5,7 +5,7 @@ const dashLoginGet = (req, res) => {
     if (req.isLogedin) {
         return res.redirect('/dashboard')
     }
-    res.render('adminLogin')
+    res.render('login', {u_type: "Admin"})
 }
 
 module.exports = dashLoginGet

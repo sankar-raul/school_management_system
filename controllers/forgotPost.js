@@ -1,7 +1,7 @@
 const db = require('../dbConnections/sqldb')
 const generateOtp = require('../functions/generateOtp')
 const sendMail = require('../functions/sendMail');
-const forget = async (req, res) => {
+const forgot = async (req, res) => {
     console.log(req.body)
     if (!req.body.email || !req.body.u_type) {
         return res.end('email and u_type required')
@@ -64,4 +64,4 @@ const newOtp = async (email) => {
         })
     })
 }
-module.exports = forget
+module.exports = forgot

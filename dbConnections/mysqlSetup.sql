@@ -73,7 +73,7 @@ select * from faculties;
     dob date not null,
     email varchar(255) unique,
     phone char(14) unique not null,
-    password varchar(255) generated always as (dob) stored,
+    password varchar(255),
     age int check (age > 5),
     dept_name varchar(255) not null,
     FOREIGN KEY (dept_name) REFERENCES department(dept_name) on update cascade on delete cascade
@@ -90,6 +90,7 @@ begin
     select dept_id into _dpt_id from department where dept_name = new.dept_name;
     set _unique = coalesce(cast(right((select roll_no from students where roll_no like concat(new.dept_name, _dpt_id, '%') order by roll_no desc limit 1), 4) AS unsigned), 0) + 1;
     set new.s_id = _s_id;
+    set new.password = new.dob;
     set new.roll_no = CONCAT(new.dept_name, _dpt_id, LPAD(_unique, 4, '0'));
 	set new.reg_no = CONCAT(YEAR(new.reg_date), _dpt_id, LPAD(_unique, 4, '0'));
 	set new.age = timestampdiff(year, new.dob, curdate());
@@ -129,8 +130,8 @@ insert into faculties (f_name, dob,dept_name, email) values ('Pallab Sen', '1980
 insert into faculties (f_name, dob, dept_name, email) values ('Anik Sir', '1974-01-21', 'BCA', 'aniksir@gmail.com');
 insert into faculties (f_name, dob, dept_name, email) values ('Unknown Sir', '1978-01-21', 'BBA', 'unknown@gmail.com');
 select * from department;
-select * from students;
-insert into students (s_name, reg_date, dob, phone, dept_name) values ('Sankar Raul', '2024-08-01', '2005-11-15', '9382613492', 'BCA'), ('Avi Raj', '2024-08-01', '2005-11-05', '9464895458', 'BBA'), ('Debanjan Bera', '2024-08-01', '2004-11-15', '8456958452', 'BCA');
+select * from students; 
+insert into students (s_name, reg_date, dob, email, phone, dept_name) values ('Sankar Raul', '2024-08-01', '2005-11-15', 'raulsankar99@gmail.com', '9382613492', 'BCA'), ('Avi Raj', '2024-08-01', '2005-11-05', 'aviraj@gmail.com', '9464895458', 'BBA'), ('Debanjan Bera', '2024-08-01', '2004-11-15', 'debanjan@gmail.com', '8456958452', 'BCA');
 insert into results (reg_no, marks, semester, session) values ('202410001', '{"english": 88, "coma": 87, "geography": 90}', 1, '2023-2024');
 select * from department order by dept_id;
 select * from students;

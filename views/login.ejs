@@ -3,19 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin</title>
+    <title><%= u_type %></title>
 </head>
 <body>
     <form>
-        <h2>Admin Login</h2>
+        <h2><%= u_type %> Login</h2>
         <label for="email">Email </label>
         <input id="email" type="email" required placeholder="email"><br>
         <label for="password">Password</label>
         <input id="password" type="password" required placeholder="Password"><br>
         <input type="submit" value="Login">
     </form>
-    <a href="/dashboard/forgot">Forgot Password</a>
+    <% if (u_type == 'Admin') { %>
+        <% var path = 'dashboard';%>
+        <% } else { %>
+        <% var path = u_type.toLowerCase() + 's' %>
+    <% } %>
+    <a id="forgot" href="/<%= path %>/forgot">Forgot Password</a>
 <script type="text/javascript">
+    const url = () => {
+        
+    }
     const form = document.querySelector('form')
     form.onsubmit = async (e) => {
         e.preventDefault()
@@ -28,7 +36,7 @@
         }
     }
     const login = async (email, password) => {
-        const response = await fetch('/dashboard/login', {
+        const response = await fetch('/<%= path %>/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

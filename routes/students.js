@@ -8,4 +8,10 @@ Router.get('/new', studentController.newStudent)
 Router.get("/add", studentController.addStudent)
 Router.get("/showStudents", studentController.showStudents)
 Router.get("/search", studentController.searchStudents)
-  module.exports = Router
+Router.get('/login', studentController.login)
+Router.post('/login', studentController.loginPost)
+Router.get('/logout', studentController.logout)
+Router.get('/forgot', studentController.forgot)
+Router.post('/forgot', studentController.forgotPost)
+Router.post('/forgot/varify', studentController.varifyOtp)
+module.exports = Router

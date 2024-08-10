@@ -28,37 +28,37 @@
         form[0].onsubmit = async (e) => {
             e.preventDefault()
             lastReqemail = form[0].querySelector('input').value
-            console.log(lastReqemail);
             const result = await forgot(form[0].querySelector('input').value)
             alert(result)
         }
         const forgot = async (email) => {
-            const response = await fetch('/dashboard/forgot', {
+            const response = await fetch('/<%= u_type == "Admin" ? "dashboard" : u_type + "s" %>/forgot', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({email: email, u_type: '<%= u_type.toLowerCase() %>'})
             })
             return response.text()
         }
-        const varify = async (email, otp, newPassword) => {
-            const response = await fetch('/dashboard/forgot/varify', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email: email, u_type: '<%= u_type.toLowerCase() %>', otp: otp, newPassword: newPassword})
+        const varify = (email, otp, newPassword) => {
+            return new Promise(async (resolve, reject) => {
+                const response = await fetch('/<%= u_type == "Admin" ? "dashboard" : u_type + "s" %>/forgot/varify', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email: email, u_type: '<%= u_type.toLowerCase() %>', otp: otp, newPassword: newPassword})
+                })
+                resolve(response.text())
             })
-            return response.text()
         }
         form[1].onsubmit = async (e) => {
             e.preventDefault()
             if (form[1].querySelectorAll('input')[1].value ==  form[1].querySelectorAll('input')[2].value) {
-                const result = await varify(lastReqemail, form[1].querySelectorAll('input')[0].value,  form[1].querySelectorAll('input')[1].value)
-                alert(result)
-                if (result == 'Password Changed!') {
-                    window.location.reload()
-                }
+                varify(lastReqemail, form[1].querySelectorAll('input')[0].value,  form[1].querySelectorAll('input')[1].value).then((data) => {
+                    alert(data)
+                })
             } else {
                 alert('Passwords does not match!')
             }
+            
         }
     </script>
 </body>
