@@ -54,7 +54,7 @@
             if (form[1].querySelectorAll('input')[1].value ==  form[1].querySelectorAll('input')[2].value) {
                 const response = await varify(lastReqemail, form[1].querySelectorAll('input')[0].value,  form[1].querySelectorAll('input')[1].value)
                 if (response == 'refresh') {
-                    location.href = '/<%= u_type == "Admin" ? "dashboard" : u_type + "s" %>'
+                    location.replace('/<%= u_type == "Admin" ? "dashboard" : u_type + "s" %>')
                 } else {
                     alert(response)
                 }
