@@ -52,9 +52,12 @@
         form[1].onsubmit = async (e) => {
             e.preventDefault()
             if (form[1].querySelectorAll('input')[1].value ==  form[1].querySelectorAll('input')[2].value) {
-                varify(lastReqemail, form[1].querySelectorAll('input')[0].value,  form[1].querySelectorAll('input')[1].value).then((data) => {
-                    alert(data)
-                })
+                const response = await varify(lastReqemail, form[1].querySelectorAll('input')[0].value,  form[1].querySelectorAll('input')[1].value)
+                if (response == 'refresh') {
+                    location.href = '/<%= u_type == "Admin" ? "dashboard" : u_type + "s" %>'
+                } else {
+                    alert(response)
+                }
             } else {
                 alert('Passwords does not match!')
             }

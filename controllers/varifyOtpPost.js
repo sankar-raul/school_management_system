@@ -20,12 +20,11 @@ const varifyOtpPost = async (req, res) => {
                     console.log(status)
                 res.cookie('u_id', status.u_id, { expires: new Date(Date.now() + status.ex), httpOnly: true })
                 res.cookie('security_key', status.newSecurityKey, { expires: new Date(Date.now() + status.ex), httpOnly: true })
-                return res.end('Password Changed!')
+                return res.end('refresh')
             } else {
                 return res.end('Error: Password not changed!')
             }
         }
-        return res.end('Otp varified')
     } else {
         return res.end('Invalid Otp!')
     }

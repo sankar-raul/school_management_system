@@ -5,7 +5,7 @@ const forgotApi = require('./forgotPost')
 const varifyOtpPost = require('./varifyOtpPost')
 function studentsPage(req, res) {
     if (req.isLogedin && req.u_type == 'student') {
-        db.query(`select * from students where email = ?`, req.cookies.u_id,(error, result) => {
+        db.query(`select * from students_dept_view where email = ?`, req.cookies.u_id,(error, result) => {
             if (error) {
                 console.log(error)
                 return res.status(500).end('Intenal server error')
@@ -16,17 +16,18 @@ function studentsPage(req, res) {
         return res.redirect('/students/login')
     }
   }
-const newStudent = (req, res) => {
+const register = (req, res) => {
     res.render("addStudents")
 }
-const addStudent = (req, res) => {
-    const {name, dept, year, reg_date} = req.query
-    if(name && dept) {
-        db.query("insert into students (S_name, registration_no, dept, roll_no) values (?, ?, ?, ?, ?)", [name, section, registration_no, dept, roll_no], (error, result) => {
+const registerPost = (req, res) => {
+    const {name, dept, year, reg_date, password} = req.query
+    if(name && dept && year && reg_date) {
+        db.query("insert into students (s_name, dept) values (?, ?, ?, ?, ?)", [name, section, registration_no, dept, roll_no], (error, result) => {
             if (!error) {
-                res.redirect("/students")
+                res.end("/students")
             } else {
-                res.status(501).json(error)
+                console.log(error)
+                res.status(500).end('data inserting errorerror')
             }
         })
     } else {
@@ -90,4 +91,4 @@ const forgotPost = async (req, res) => {
 const varifyOtp = async (req, res) => {
     await varifyOtpPost(req, res)
 }
-module.exports = {studentsPage, newStudent, addStudent, showStudents, searchStudents, login, loginPost, logout, forgot, forgotPost, varifyOtp}
+module.exports = {studentsPage, register, registerPost, showStudents, searchStudents, login, loginPost, logout, forgot, forgotPost, varifyOtp}

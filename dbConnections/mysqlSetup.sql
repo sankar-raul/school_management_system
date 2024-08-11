@@ -1,5 +1,6 @@
 create database if not exists school;
 use school;
+-- drop database school;
 -- drop table results;
 
 -- drop trigger before_insert_results;
@@ -13,7 +14,6 @@ use school;
 -- sql query to remove only those facultie3s who are not hod
 -- delete from faculties where f_id not in (select hod_id from department where hod_id is not null);
 
---  drop table faculties;
 --  drop table students;
 --  drop table department;
 create table if not exists faculties (
@@ -22,7 +22,7 @@ create table if not exists faculties (
     u_id varchar(20) unique,
     age int,
     dob date not null,
-    dept_name varchar(255) not null,
+    dept_id int not null,
     email varchar(100) unique not null,
     password varchar(255) generated always as (dob) stored
 );
@@ -34,16 +34,18 @@ for each row
 begin
 	declare _f_id int;
     declare _u_id varchar(20);
+    declare _dpt_name varchar(255);
+    select dept_name into _dpt_name from department where id = new.dept_id;
 	set _f_id = coalesce((select f_id from faculties order by f_id desc limit 1), 0) + 1;
-    set _u_id = coalesce(cast(right((select u_id from faculties where u_id like concat('F', new.dept_name, '%') order by u_id desc limit 1), 3) AS unsigned), 0) + 1;
+    set _u_id = coalesce(cast(right((select u_id from faculties where u_id like concat('F', _dpt_name, '%') order by u_id desc limit 1), 3) AS unsigned), 0) + 1;
 	set new.f_id = _f_id;
-    set new.u_id = concat('F', new.dept_name, lpad(_u_id, 3, 0));
+    set new.u_id = concat('F', _dpt_name, lpad(_u_id, 3, 0));
     set new.age = timestampdiff(year, new.dob, curdate());
 end;
 // 
 delimiter ;
 create table if not exists department (
-	dept_id int primary key default 1,
+	id int primary key default 1,
     dept_name varchar(255) unique,
     duration int default 3,
     hod_id int,
@@ -55,8 +57,8 @@ before insert on department
 for each row
 begin
 	declare _dept_id int;
-    set _dept_id = coalesce((select dept_id from department order by dept_id desc limit 1), 0) + 1;
-    set new.dept_id = _dept_id;
+    set _dept_id = coalesce((select id from department order by id desc limit 1), 0) + 1;
+    set new.id = _dept_id;
 end;
 //
 delimiter ;
@@ -67,73 +69,81 @@ select * from faculties;
  create table if not exists students (
     s_id int primary key default 1,
     s_name varchar(40) not null,
+    _from date not null,
+	dept_id int not null,
     reg_no varchar(30),
     roll_no char(15),
     reg_date date not null,
     dob date not null,
-    email varchar(255) unique,
+    email varchar(255) unique not null,
     phone char(14) unique not null,
-    password varchar(255),
-    age int check (age > 5),
-    dept_name varchar(255) not null,
-    FOREIGN KEY (dept_name) REFERENCES department(dept_name) on update cascade on delete cascade
+    password varchar(255) not null,
+    FOREIGN KEY (dept_id) REFERENCES department(id) on update cascade on delete cascade
 );
+-- alter table students modify column _from date not null;
+select * from students;
+-- alter table students add column _from int not null;
+-- alter table students add column _to int;
+-- alter table students add column semesters int;
+
+-- create a view students department merge table
+create view students_dept_view as
+select *,
+timestampdiff(year, dob, curdate()) as age,
+date_add(students._from, interval department.duration year) as _to
+from students left join department on students.dept_id = department.id;
+
+-- drop view students_dept_view;
+select * from students_dept_view;
+select * from students;
+-- drop trigger before_insert_student;
 delimiter //
 create trigger before_insert_student
 before insert on students
 for each row
 begin
 	declare _s_id int;
-	declare _dpt_id int;
+	declare _dpt_name varchar(255);
     declare _unique int;
     set _s_id = coalesce((select s_id from students order by s_id desc limit 1), 0) + 1;
-    select dept_id into _dpt_id from department where dept_name = new.dept_name;
-    set _unique = coalesce(cast(right((select roll_no from students where roll_no like concat(new.dept_name, _dpt_id, '%') order by roll_no desc limit 1), 4) AS unsigned), 0) + 1;
+    select dept_name into _dpt_name from department where id = new.dept_id;
+    set _unique = coalesce(cast(right((select roll_no from students where roll_no like concat(_dpt_name ,new.dept_id, '%') order by roll_no desc limit 1), 4) AS unsigned), 0) + 1;
     set new.s_id = _s_id;
-    set new.password = new.dob;
-    set new.roll_no = CONCAT(new.dept_name, _dpt_id, LPAD(_unique, 4, '0'));
-	set new.reg_no = CONCAT(YEAR(new.reg_date), _dpt_id, LPAD(_unique, 4, '0'));
-	set new.age = timestampdiff(year, new.dob, curdate());
+    set new.roll_no = CONCAT(_dpt_name, new.dept_id, LPAD(_unique, 4, '0'));
+--  set new.roll_no = coalesce(cast(right((select roll_no from students where roll_no like concat(new.dept_id, _dpt_name, '%') order by roll_no desc limit 1), 4) AS unsigned), 0) + 1;
+	set new.reg_no = CONCAT(YEAR(new.reg_date), new.dept_id, LPAD(_unique, 4, '0'));
 END;
 // 
 delimiter ;
+select * from students;
 create index idx_reg_no on students (reg_no);
 create table if not exists results (
 	id int auto_increment primary key,
 	reg_no varchar(30) not null,
-    marks json not null, -- {"english": 87, "math": 89, "geography": 78}
-    total_semesters int,
+    marks json not null, -- {"english": 87, "math": 89, "geography": 78},
+    pass_grade int default 35,
+    total int not null,
+	dept_id int not null,
+    full_marks int not null,
+    grade char(3) not null,
+    percentage float4 generated always as ((total / full_marks)*100) stored,
     semester int not null,
-    session varchar(20) not null,
-    dept_name varchar(255),
+    batch date not null,
     foreign key (reg_no) references students(reg_no)
 );
-delimiter //
-	create trigger before_insert_results
-    before insert on results
-    for each row
-    begin
-		declare _duration varchar(20);
-        declare _dept_name varchar(255);
-        select students.dept_name, department.duration into _dept_name, _duration
-			from students join department on students.dept_name = department.dept_name
-			where students.reg_no = new.reg_no limit 1;
-		set new.dept_name = _dept_name;
-        set new.total_semesters = _duration * 2;
-	end;
-// 
-delimiter ;
+-- drop table results;
 insert into department (dept_name, duration) values ('BCA',4), ('BBA',4);
 -- select cast(right('bca0001', 4) AS unsigned);
-insert into faculties (f_name, dob,dept_name, email) values ('Gangotri', '1989-02-12', 'BCA','gangotri@gmail.com');
-insert into faculties (f_name, dob,dept_name, email) values ('Pallab Sen', '1980-05-15','BCA', 'pallabsen@gmail.com');
-insert into faculties (f_name, dob, dept_name, email) values ('Anik Sir', '1974-01-21', 'BCA', 'aniksir@gmail.com');
-insert into faculties (f_name, dob, dept_name, email) values ('Unknown Sir', '1978-01-21', 'BBA', 'unknown@gmail.com');
 select * from department;
-select * from students; 
-insert into students (s_name, reg_date, dob, email, phone, dept_name) values ('Sankar Raul', '2024-08-01', '2005-11-15', 'raulsankar99@gmail.com', '9382613492', 'BCA'), ('Avi Raj', '2024-08-01', '2005-11-05', 'aviraj@gmail.com', '9464895458', 'BBA'), ('Debanjan Bera', '2024-08-01', '2004-11-15', 'debanjan@gmail.com', '8456958452', 'BCA');
-insert into results (reg_no, marks, semester, session) values ('202410001', '{"english": 88, "coma": 87, "geography": 90}', 1, '2023-2024');
-select * from department order by dept_id;
+insert into faculties (f_name, dob,dept_id, email) values ('Gangotri', '1989-02-12', 1,'gangotri@gmail.com');
+insert into faculties (f_name, dob,dept_id, email) values ('Pallab Sen', '1980-05-15', 1, 'pallabsen@gmail.com');
+insert into faculties (f_name, dob, dept_id, email) values ('Anik Sir', '1974-01-21', 1, 'aniksir@gmail.com');
+insert into faculties (f_name, dob, dept_id, email) values ('Unknown Sir', '1978-01-21', 2, 'unknown@gmail.com');
+select * from faculties;
+select * from students;
+-- delete from students where s_id in (1,2,3);
+insert into students (s_name, _from, reg_date, dob, email, phone, dept_id, password) values ('Sankar Raul', '2023-08-01',  '2024-08-01', '2005-11-15', 'raulsankar99@gmail.com', '9382613492', 1, 'sankar'), ('Avi Raj', '2023-08-01','2024-08-01', '2005-11-05', 'aviraj@gmail.com', '9464895458', 2, 'sankar'), ('Debanjan Bera', '2023-08-01', '2024-08-01', '2004-11-15', 'debanjan@gmail.com', '8456958452', 1, 'sankar');
+select * from department order by id;
 select * from students;
 select * from department;
 select * from faculties;
