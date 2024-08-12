@@ -9,10 +9,17 @@
 ::selection {
     background: #60ff0a65;
 }
+*:is(input):not(input[type='submit']) {
+    font-family: 'Times New Roman', Times, serif;
+}
+*:is(select) {
+    font-family: 'Times New Roman', Times, serif;
+}
 body {
     height: 100dvh;
     display: grid;
     place-items: center;
+    font-family: 'Times New Roman', Times, serif;
 }
 form {
     border: 1px solid transparent;
@@ -44,25 +51,23 @@ form .box input:focus {
     background: rgba(137, 200, 236, 0.032);
 }
 input[type="submit"] {
-    background: #12121215;
-    color: rgb(11, 11, 11);
+    background: #121212dd;
+    color: rgb(255, 255, 255);
     border: 1px solid transparent;
     width: 80%;
     height: 40px;
     border-radius: 10px;
-    transition: 1s;
+    transition: .6s ease;
     cursor: pointer;
 }
 input[type="submit"]:hover {
-    background: #121212dd;
-    transition-duration: .2s;
-    color: rgb(255, 255, 255);
+    background: #121212aa;
+    transition: .3s ease-out;
     box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.173), -7px -7px 30px 0px rgba(95, 162, 220, 0.215);
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 form .box {
     height: 46px;
-    width: 80%;
+    width: 100%;
     margin-bottom: 10px;
 }
 form .box label {
@@ -75,4 +80,64 @@ form .title {
     padding-bottom: 30px;
     font-family: 'Times New Roman', Times, serif;
     color: rgb(3, 47, 50);
+}
+.box-title {
+    align-self: flex-start;
+    margin: 4px auto 10px 20px;
+    padding: 3px;
+    position: relative;
+}
+.box-title::before {
+    position: absolute;
+    content: '';
+    left: 0;
+    bottom: 0;
+    width: 150%;
+    height: 1px;
+    background: #121212dd;
+}
+.input-container {
+    /* border: 1px solid red; */
+    width: 80%;
+}
+.box {
+    /* border: 1px solid lime; */
+}
+.select-options {
+    border-radius: 10px;
+    width: 100%;
+    border: 1px solid transparent;
+    font-size: 17px;
+    margin: auto auto;
+    background: #3284ff0b;
+    z-index: 1;
+    overflow: visible;
+    background-color: aliceblue;
+    position: relative;
+}
+.select-options > summary {
+    list-style: none;
+    height: 40px;
+    padding-left: 8px;
+    /* border: 1px solid red; */
+    align-content: center;
+}
+.select-options > ul {
+    position: absolute;
+    width: 100%;
+    list-style: none;
+    background-color: aliceblue;
+    max-height: 300px;
+    overflow: scroll;
+    overflow-x: hidden;
+    border-radius: 0px 0px 10px 10px;
+}
+::-webkit-scrollbar {
+    width: 0px;
+}
+.select-options > ul li {
+    padding: 10px;
+}
+.select-options > ul li:hover {
+    background-color: #fff8;
 }

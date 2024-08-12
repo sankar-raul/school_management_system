@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/addStudents.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+</head>
+<body>
+    <form action="/students/add">
+        <h1 class="title">Student Registration</h1>
+        <label class="box-title" for="container">Student info</label>
+        <section id="container" class="input-container">
+        <div class="box">
+        <label for="name">Student name* </label>
+        <input type="text" name="name" id="name" required /> 
+        </div>
+        <br>
+        <div class="box">
+        <label for="email">Email.* </label>
+        <input type="text" name="registration_no" id="registration_no" required />
+        </div>
+        <br>
+        <div class="box" style="z-index: 3;">
+        <label for="dept">Depertment </label>
+        <details id="dept" class="select-options">
+        <summary>not selected</summary>
+        <ul>
+        <% dept_info.forEach(dept => { %>
+            <li value="<%= dept.id %>"><%= dept.dept_name %></li>
+        <% }) %>
+        </ul>
+        </details>
+        </div>
+        <br>
+        <div class="box" style="z-index: -1;">
+        <label for="phone">Phone No* </label>
+        <input id="phone" type="number" required>
+        </div>
+        </section>
+        <br>
+        <label class="box-title" for="container">Qualification</label>
+        <section id="container" class="input-container">
+        <div class="box">
+        <label for="school">School*</label>
+        <input type="text" name="school" id="school" required/>
+        </div>
+        </section>
+        <br>
+        <input type="submit" value="Add Student">
+    </form>
+</body>
+</html>

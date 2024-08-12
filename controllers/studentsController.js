@@ -3,6 +3,7 @@ const varifyLogin = require('./loginVarify')
 const deleteCookie = require('../functions/deleteCookie')
 const forgotApi = require('./forgotPost')
 const varifyOtpPost = require('./varifyOtpPost')
+const getAllDept = require('../functions/getAllDept')
 function studentsPage(req, res) {
     if (req.isLogedin && req.u_type == 'student') {
         db.query(`select * from students_dept_view where email = ?`, req.cookies.u_id,(error, result) => {
@@ -16,8 +17,15 @@ function studentsPage(req, res) {
         return res.redirect('/students/login')
     }
   }
-const register = (req, res) => {
-    res.render("addStudents")
+const register = async (req, res) => {
+    let dept_info = {}
+    try {
+    dept_info = await getAllDept()
+    }
+    catch (e) {
+        console.log(e)
+    }
+    res.render("register", {dept_info})
 }
 const registerPost = (req, res) => {
     const {name, dept, year, reg_date, password} = req.query
