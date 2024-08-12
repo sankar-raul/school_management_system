@@ -6,7 +6,14 @@ const forgot = async (req, res) => {
     if (!req.body.email || !req.body.u_type) {
         return res.end('email and u_type required')
     }
-    const isValid = await isValidEmail(req.body)
+    try {
+    var isValid = await isValidEmail(req.body)
+    } catch (e) {
+        var isValid = 'database error!'
+    }
+    if (isValid == 'database error!') {
+        return res.end(isValid)
+    }
     if (isValid == 'invalid user type') {
         return res.end('invalid user type')
     }
@@ -39,7 +46,7 @@ const isValidEmail = async ({email, u_type}) => {
         db.query(`select email from ${validTypes[u_type]} where email = ?`, email, (error, result) => {
             if (error) {
                 console.error(error)
-                return reject(error)
+                return reject("email validation error!")
             }
             if (result[0]) {
                 return resolve(true)
@@ -55,10 +62,14 @@ const newOtp = async (email) => {
         db.query(`insert into otp (u_id, code) value (?, ?)`, [email, otp], async (error) => {
             if (error) {
                 console.error(error)
-                return reject(false)
+                return reject("Otp processing error!")
             }
             console.log(otp)
-            const isMailSent = await sendMail({email: email, otp: otp}, "Varify Otp")
+            try {
+            var isMailSent = await sendMail({email: email, otp: otp}, "Varify Otp")
+            } catch (e) {
+            var isMailSent = e
+            }
             console.log(isMailSent)
             return resolve(isMailSent)
         })
