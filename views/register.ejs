@@ -7,24 +7,27 @@
     <title>Student Registration</title>
 </head>
 <body>
-    <form action="/students/add">
+    <form id="form" action="/students/add">
+        <section class="slide slide-1">
         <h1 class="title">Student Registration</h1>
         <label class="box-title" for="container">Student info</label>
         <section id="container" class="input-container">
         <div class="box">
         <label for="name">Student name* </label>
-        <input type="text" name="name" id="name" required /> 
+        <input type="text" name="name" id="name"/>
         </div>
         <br>
         <div class="box">
         <label for="email">Email.* </label>
-        <input type="text" name="registration_no" id="registration_no" required />
+        <input type="text" name="email" id="email"/>
         </div>
         <br>
         <div class="box" style="z-index: 3;">
-        <label for="dept">Depertment </label>
+        <label for="dept">Depertment* </label>
         <details id="dept" class="select-options">
-        <summary>not selected</summary>
+        <summary id="not-selected">
+            <li value="not"> not selected</li>
+        </summary>
         <ul>
         <% dept_info.forEach(dept => { %>
             <li value="<%= dept.id %>"><%= dept.dept_name %></li>
@@ -35,19 +38,36 @@
         <br>
         <div class="box" style="z-index: -1;">
         <label for="phone">Phone No* </label>
-        <input id="phone" type="number" required>
+        <input id="phone" type="number">
         </div>
         </section>
-        <br>
+        </section>
+        <section class="slide slide-2">
         <label class="box-title" for="container">Qualification</label>
         <section id="container" class="input-container">
         <div class="box">
         <label for="school">School*</label>
-        <input type="text" name="school" id="school" required/>
+        <input type="text" name="school" id="school"/>
         </div>
         </section>
         <br>
-        <input type="submit" value="Add Student">
+        </section>
+
+        <section class="slide slide-3">
+            <label class="box-title" for="container">E-Mail varification</label>
+        <section id="container" class="input-container">
+        <div class="box">
+        <label for="school">Email</label>
+        <input type="email" name="email" readonly id="email-varify"/>
+        </div>
+        </section>
+        <br>
+        </section>
+        <div class="slide-controller">
+        <button type="button" id="previous">Previous</button>
+        <input type="submit" value="Next" id="next">
+        </div>
     </form>
+    <script src="/js/register.js"></script>
 </body>
 </html>

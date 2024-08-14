@@ -50,20 +50,9 @@ form .box input:focus {
     outline: 1px solid rgba(31, 141, 244, 0.271);
     background: rgba(137, 200, 236, 0.032);
 }
-input[type="submit"] {
-    background: #121212dd;
-    color: rgb(255, 255, 255);
-    border: 1px solid transparent;
-    width: 80%;
-    height: 40px;
-    border-radius: 10px;
-    transition: .6s ease;
-    cursor: pointer;
-}
 input[type="submit"]:hover {
-    background: #121212aa;
     transition: .3s ease-out;
-    box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.173), -7px -7px 30px 0px rgba(95, 162, 220, 0.215);
+    box-shadow: 3px 3px 50px 0px rgba(0, 255, 123, 0.737);
 }
 form .box {
     height: 46px;
@@ -104,6 +93,7 @@ form .title {
     /* border: 1px solid lime; */
 }
 .select-options {
+    background-color: transparent;
     border-radius: 10px;
     width: 100%;
     border: 1px solid transparent;
@@ -122,11 +112,31 @@ form .title {
     /* border: 1px solid red; */
     align-content: center;
 }
+.select-options > summary::after {
+    content: '>';
+    background-color: #2d2d2d11;
+    border-radius: 50%;
+    height: 50%;
+    aspect-ratio: 1 / 1;
+    display: grid;
+    place-items: center;
+    font-size: large;
+    cursor: pointer;
+    position: absolute;
+    right: 4%;
+    top: 50%;
+    font-weight: 900;
+    transform: translateY(-50%) rotate(90deg);
+}
+.select-options > summary:hover::after {
+    background-color: #2d2d2d23;
+}
 .select-options > ul {
+    backdrop-filter: blur(40px);
     position: absolute;
     width: 100%;
     list-style: none;
-    background-color: aliceblue;
+    background-color: transparent;
     max-height: 300px;
     overflow: scroll;
     overflow-x: hidden;
@@ -137,7 +147,58 @@ form .title {
 }
 .select-options > ul li {
     padding: 10px;
+    border: 1px solid transparent;
+    transition: .3s ease;
+}
+.select-options > ul li:nth-of-type(even) {
+    /* background-color: rgb(239, 241, 245); */
 }
 .select-options > ul li:hover {
-    background-color: #fff8;
+    /* background-color: #fff8; */
+    border-bottom: 1px solid rgb(0, 0, 0,.8);
+}
+.selected {
+    border-bottom: 1px solid rgb(0, 0, 0,.8);
+    /* background-color: rgba(221, 238, 238, 0.492); */
+}
+.slide:not(.slide-1) {
+    display: none;
+}
+.slide {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+input[type="submit"], #previous {
+    background: #121212dd;
+    color: rgb(255, 255, 255);
+    border: 1px solid transparent;
+    height: 40px;
+    width: 70%;
+    border-radius: 10px;
+    transition: .6s ease;
+    cursor: pointer;
+}
+#previous {
+    color: #121212dd;
+    background-color: rgba(2, 0, 0, 0.036);
+    border: 1px solid #5551;
+}
+input[type="submit"] {
+    width: 80%;
+}
+#previous:hover {
+    /* background-color: rgba(0, 0, 0, 0.082); */
+    box-shadow: inset 0px 0px 30px 0px rgba(92, 4, 4, 0.067), 3px 3px 80px 0px rgba(254, 129, 3, 0.608);
+}
+
+.slide-controller {
+    margin-top: 20px;
+    display: grid;
+    place-items: center;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
 }
