@@ -4,6 +4,9 @@ for (let i of allInput) {
     i.addEventListener('mouseover', (e) => {
         e.target.focus()
     })
+    i.addEventListener('blur', (e) => {
+        isValid(e.target)
+    })
 }
 const selectOptions = document.querySelectorAll(".select-options")
 for (let s of selectOptions) {
@@ -12,6 +15,7 @@ for (let s of selectOptions) {
             s.children[1].querySelectorAll('.selected').forEach(selected => {
                 selected.classList.remove('selected')
             })
+            valid(s.children[0])
             s.children[0].children[0].innerHTML = e.target.innerHTML
             s.children[0].children[0].value = e.target.value
             e.target.classList.add('selected')
@@ -50,43 +54,59 @@ previous.onclick = () => {
 
 const isChecked = (element) => {
     const fields = element.querySelectorAll('input')
-    const options = element.querySelectorAll('details')
+    const options = element.querySelectorAll('.select-options')
     const isOptions = (options) => {
         let ret = true
         options.forEach(op => {
-           if (op.children[0].children[0].value == 0) {
-             ret *= false
+        if (op.children[0].children[0].value == 0) {
+            ret *= false
+            invalid(op.children[0])
            } else {
             info[op.id] = op.children[0].children[0].value
            }
         })
         return ret
     }
-    const isFields = (fileds) => {
+    const isFields = (fields) => {
         let ret = true
         fields.forEach(fi => {
-           if (fi.value != '') {
-                switch (fi.type) {
-                    case 'text' || 'password':
-                        ret *= true
-                        break
-                    case 'email':
-                        ret *= /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(fi.value)
-                        break
-                    case 'number':
-                        ret *= true
-                        break;
-                    default:
-                        ret *= true
-
-                }
-                info[fi.id] = fi.value
-           } else {
-            ret *= false
-           }
+          ret *= isValid(fi);
         })
         return ret
     }
 
-    return isFields(fields) && isOptions(options)
+    return isFields(fields) * isOptions(options)
+}
+const invalid = (field) => {
+    field.style.borderBottom = "1px solid #d44"
+}
+const valid = (field) => {
+    field.style.borderBottom = "1px solid #4d4"
+}
+function isValid(fi) {
+    let is
+     if (fi.value != '') {
+                switch (fi.type) {
+                    case 'text' || 'password':
+                        is = true
+                        !is ? invalid(fi) : valid(fi)
+                        break
+                    case 'email':
+                        is = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(fi.value)
+                        !is ? invalid(fi) : valid(fi)
+                        break
+                    case 'number':
+                        is = true
+                        !is ? invalid(fi) : valid(fi)
+                        break;
+                    default:
+                        is = true
+                        !is ? invalid(fi) : valid(fi)
+                }
+                info[fi.id] = fi.value
+           } else {
+            is = false
+            invalid(fi)
+           }
+           return is
 }

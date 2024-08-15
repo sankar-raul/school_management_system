@@ -46,7 +46,7 @@ form {
     position: relative;
     box-shadow: 11px 11px 300px 0px rgba(0, 0, 0, 0.073), -11px -11px 300px 0px rgba(95, 162, 220, 0.115);
 }
-form .box input, form .box select {
+form .box input {
     height: 40px;
     border-radius: 10px;
     width: 100%;
@@ -101,6 +101,14 @@ form .title {
 .input-container {
     /* border: 1px solid red; */
     width: 80%;
+}
+input:invalid {
+    border-bottom: #d44;
+    box-shadow: none;
+
+}
+input:invalid:focus:invalid {
+    outline: none;
 }
 .box {
     /* border: 1px solid lime; */
@@ -238,3 +246,17 @@ input[type="submit"] {
     grid-template-columns: 1fr 1fr;
     width: 100%;
 }
+/* .invalid {
+    border: 1px solid red;
+    
+}
+.invalid::before {
+    content: 'hudhufhu';
+    position: absolute;
+    width: 180%;
+    height: 100%;
+    background-color: red;
+    bottom: 0;
+    left: 0;
+    z-index: 7;
+} */
