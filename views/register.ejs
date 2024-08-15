@@ -25,12 +25,12 @@
         <div class="box" style="z-index: 3;">
         <label for="dept">Depertment* </label>
         <details id="dept" class="select-options">
-        <summary id="not-selected">
+        <summary id="summary">
             <li value="not"> not selected</li>
         </summary>
         <ul>
         <% dept_info.forEach(dept => { %>
-            <li value="<%= dept.id %>"><%= dept.dept_name %></li>
+            <li class="option" value="<%= dept.id %>"><%= dept.dept_name %></li>
         <% }) %>
         </ul>
         </details>
@@ -64,8 +64,8 @@
         <br>
         </section>
         <div class="slide-controller">
-        <button type="button" id="previous">Previous</button>
-        <input type="submit" value="Next" id="next">
+        <button class="secondery-btn" type="button" id="previous">Previous</button>
+        <input class="primary-btn" type="submit" value="Next" id="next">
         </div>
     </form>
     <script src="/js/register.js"></script>
