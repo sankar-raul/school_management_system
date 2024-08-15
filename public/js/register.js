@@ -24,6 +24,7 @@ for (let s of selectOptions) {
     })
 }
 const slides = document.querySelectorAll('.slide')
+slides[0].querySelector("input").focus()
 const info = {}
 let currentSlideNo = 0
 const nextBtn = document.getElementById('next')
@@ -38,9 +39,13 @@ form.onsubmit = (event) => {
         varifyEmail.value = info.email
         slides[currentSlideNo].style.display = 'none'
         slides[++currentSlideNo].style.display = 'flex'
+        slides[currentSlideNo].querySelector('input').focus()
+        if (slides[currentSlideNo].id == "varifyEmailOtp") {
+            newOtp()
+        }
     } 
     }
-    console.log(info)
+    console.log(info) // for development debuging
 }
 previous.onclick = () => {
     if (currentSlideNo <= 0) {
@@ -109,4 +114,52 @@ function isValid(fi) {
             invalid(fi)
            }
            return is
+}
+function loadingDotAnime(el) {
+    let i = 0
+    let interval = setInterval(() => {
+        if (i >= 4) {
+            i = 0
+            el.innerHTML = ''
+        } else {
+            el.innerHTML += '.'
+            i++
+        }
+    }, 200)
+    return interval
+}
+const resend = document.getElementById('resend')
+const counter = document.getElementById('counter')
+counter.style.display = 'none'
+const otpInfo = document.getElementById('otp-info')
+async function newOtp() {
+    otpInfo.children[0].innerHTML = `<span>Requesting an OTP<span id="loading-dot-anime"></span></span>`
+    var dotInterval = loadingDotAnime(document.getElementById('loading-dot-anime'))
+    return new Promise((resolve, reject) => {
+        otpInfo.children[2].style.display = 'none'
+        setTimeout(() => {
+            startCouter()
+            clearInterval(dotInterval)
+            resolve(true)
+        }, 3000)
+    })
+}
+
+function startCouter() {
+    let count = 30
+    otpInfo.children[0].innerHTML = "<span>Otp sent!</span>"
+    counter.style.display = 'block'
+    otpInfo.children[2].style.display = 'none'
+    const counterInterval = setInterval(() => {
+        counter.innerHTML = "resend after " + --count
+        }, 1000)
+    setTimeout(() => {
+        clearInterval(counterInterval)
+        otpInfo.children[2].style.display = 'block'
+        counter.style.display = 'none'
+        count = 0
+    }, 30000)
+}
+resend.onclick = (e) => {
+    newOtp()
 }

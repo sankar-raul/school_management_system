@@ -53,13 +53,24 @@
         <br>
         </section>
 
-        <section class="slide slide-3">
-            <label class="box-title" for="container">E-Mail varification</label>
+        <section class="slide slide-3" id="varifyEmailOtp">
+        <label class="box-title" for="container">E-Mail varification</label>
         <section id="container" class="input-container">
         <div class="box">
-        <label for="school">Email</label>
-        <input type="email" name="email" readonly id="email-varify"/>
+            <label for="email-varify">Email</label>
+            <input type="email-varify" name="email-varify" readonly id="email-varify"/>
         </div>
+        <br>
+            <p class="otp" id="otp-info">
+                <span>Requesting an OTP<span id="loading-dot-anime"></span></span>
+                <span id="counter" style="float:right; padding-left: 4px">resend after 30</span>
+                <span style="float: right;" id="resend"> Request a new OTP!</span>
+            </p>
+            <br>
+        <div class="box">
+            <label for="otp">OTP</label>
+            <input type="text" name="otp" id="otp" autocomplete="0"/>
+            </div>
         </section>
         <br>
         </section>

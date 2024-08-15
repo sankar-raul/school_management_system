@@ -65,7 +65,7 @@ form .box input:focus {
 }
 input[type="submit"]:hover {
     transition: .3s ease-out;
-    box-shadow: 3px 3px 50px 0px rgba(0, 255, 123, 0.737);
+    box-shadow: 3px 3px 50px 0px rgba(0, 255, 123, 0.637);
 }
 form .box {
     height: 46px;
@@ -207,6 +207,16 @@ input:invalid:focus:invalid {
     align-items: center;
     width: 100%;
     margin-bottom: 20px;
+    animation: fade-in .4s ease-in  1;
+}
+@keyframes fade-in {
+    from {
+        transform: translateX(-2%);
+        opacity: 0;
+    } to {
+        transform: translateX(0%) ;
+        opacity: 1;
+    }
 }
 .primary-btn, .secondery-btn {
     border: 1px solid transparent;
@@ -246,17 +256,10 @@ input[type="submit"] {
     grid-template-columns: 1fr 1fr;
     width: 100%;
 }
-/* .invalid {
-    border: 1px solid red;
-    
+#resend {
+    color: var(--primary-text-color);
+    transition: .5s;
 }
-.invalid::before {
-    content: 'hudhufhu';
-    position: absolute;
-    width: 180%;
-    height: 100%;
-    background-color: red;
-    bottom: 0;
-    left: 0;
-    z-index: 7;
-} */
+#resend:hover {
+    text-decoration: underline 1px var(--primary-text-color);
+}
