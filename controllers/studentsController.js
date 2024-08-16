@@ -28,9 +28,10 @@ const register = async (req, res) => {
     res.render("register", {dept_info})
 }
 const registerPost = (req, res) => {
-    const {name, dept, year, reg_date, password} = req.query
-    if(name && dept && year && reg_date) {
-        db.query("insert into students (s_name, dept) values (?, ?, ?, ?, ?)", [name, section, registration_no, dept, roll_no], (error, result) => {
+    const {name, dept, year, dob, phone, email} = req.query
+    const reg_date = req.headers['client-timestamp']
+    if(name && dept && year && reg_date, dob, phone, email) {
+        db.query("insert into students (s_name, dept_id) values (?, ?, ?, ?, ?)", [name, section, registration_no, dept, roll_no], (error, result) => {
             if (!error) {
                 res.end("/students")
             } else {
@@ -99,4 +100,22 @@ const forgotPost = async (req, res) => {
 const varifyOtp = async (req, res) => {
     await varifyOtpPost(req, res)
 }
-module.exports = {studentsPage, register, registerPost, showStudents, searchStudents, login, loginPost, logout, forgot, forgotPost, varifyOtp}
+const check = (req, res) => {
+    const validTypes = ['email', 'phone']
+    const type = validTypes.find((type) => type == Object.keys(req.query)[0])
+    if (type) {
+        db.query(`select ${type} from students where ${type} = ?`, req.query[type], (error, result) => {
+            if (error) {
+                console.log(error)
+                return res.end(error.message)
+            }
+            if(result[0]) {
+                return res.end('exists')
+            }
+            return res.end("not exists")
+        })
+    } else {
+        res.end('invalid query')
+    }
+}
+module.exports = {check, studentsPage, register, registerPost, showStudents, searchStudents, login, loginPost, logout, forgot, forgotPost, varifyOtp}

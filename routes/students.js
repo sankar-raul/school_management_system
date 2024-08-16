@@ -14,4 +14,5 @@ Router.get('/logout', studentController.logout)
 Router.get('/forgot', studentController.forgot)
 Router.post('/forgot', studentController.forgotPost)
 Router.post('/forgot/varify', studentController.varifyOtp)
+Router.get("/check", studentController.check)
 module.exports = Router

@@ -89,6 +89,24 @@ form .title {
     padding: 3px;
     position: relative;
 }
+.input-err-msg {
+    float: right;
+    color: rgba(237, 0, 0, 0.877);
+    animation: shake .2s ease-out 1;
+}
+@keyframes shake {
+    0% {
+        transform: translateX(-10px);
+    } 25% {
+        transform: translateX(7px);
+    } 50% {
+        transform: translateX(7px);
+    } 75% {
+        transform: translateX(-10px);
+    } 100% {
+        transform: translateX(5px);
+    }
+}
 .box-title::before {
     position: absolute;
     content: '';

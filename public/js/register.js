@@ -24,18 +24,23 @@ for (let s of selectOptions) {
     })
 }
 const slides = document.querySelectorAll('.slide')
+const totalSlides = slides.length
 slides[0].querySelector("input").focus()
 const info = {}
 let currentSlideNo = 0
 const nextBtn = document.getElementById('next')
 const form = document.getElementById('form')
 const previous = document.getElementById('previous')
-form.onsubmit = (event) => {
+
+form.onsubmit = async (event) => {
     event.preventDefault()
-    if (currentSlideNo >= slides.length-1) {
+    if (currentSlideNo >= totalSlides-1) {
+        res = await varifyAndSubmit()
+        alert(res)
         return
     } else {
-    if (isChecked(slides[currentSlideNo])) {
+        const isc = await isChecked(slides[currentSlideNo])
+    if (isc) {
         varifyEmail.value = info.email
         slides[currentSlideNo].style.display = 'none'
         slides[++currentSlideNo].style.display = 'flex'
@@ -43,10 +48,23 @@ form.onsubmit = (event) => {
         if (slides[currentSlideNo].id == "varifyEmailOtp") {
             newOtp()
         }
-    } 
+    }
     }
     console.log(info) // for development debuging
 }
+
+
+// do it >>>>
+
+const varifyAndSubmit = () => {
+return new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve("Done") /// to to do do
+    }, 2000)
+})
+}
+
+
 previous.onclick = () => {
     if (currentSlideNo <= 0) {
         // previous.style.display = 'hidden'
@@ -58,7 +76,7 @@ previous.onclick = () => {
     slides[currentSlideNo].querySelector('input').focus()
 }
 
-const isChecked = (element) => {
+const isChecked = async (element) => {
     const fields = element.querySelectorAll('input')
     const options = element.querySelectorAll('.select-options')
     const isOptions = (options) => {
@@ -74,14 +92,22 @@ const isChecked = (element) => {
         return ret
     }
     const isFields = (fields) => {
-        let ret = true
-        fields.forEach(fi => {
-          ret *= isValid(fi);
+        return new Promise(async (resolve, reject) => {
+            try {
+                // Map each field to a validation promise
+                const results = await Promise.all(Array.from(fields).map(async (fi) => {
+                    return await isValid(fi)
+                }))
+                // Check if all validations passed
+                const ret = results.every(result => result === true)
+                resolve(ret)
+            } catch (error) {
+                reject(error)
+            }
         })
-        return ret
     }
 
-    return isFields(fields) * isOptions(options)
+    return await isFields(fields) * isOptions(options)
 }
 const invalid = (field) => {
     field.style.borderBottom = "1px solid #d44"
@@ -89,32 +115,50 @@ const invalid = (field) => {
 const valid = (field) => {
     field.style.borderBottom = "1px solid #4d4"
 }
-function isValid(fi) {
+async function isValid(fi) {
     let is
      if (fi.value != '') {
                 switch (fi.type) {
                     case 'text' || 'password':
                         is = true
-                        !is ? invalid(fi) : valid(fi)
                         break
                     case 'email':
                         is = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(fi.value)
-                        !is ? invalid(fi) : valid(fi)
                         break
                     case 'number':
+                        if (fi.id == "phone" && fi.value.length < 10) {
+                            is = false
+                        } else {
                         is = true
-                        !is ? invalid(fi) : valid(fi)
+                        }
                         break;
                     default:
                         is = true
-                        !is ? invalid(fi) : valid(fi)
                 }
+                if (is && fi.classList.contains("unique")) {
+                    is = !await isExits([fi.id, fi.value])
+                    !is ? showErrMsg(fi, "already exists!") : removeErrMsg(fi)
+                }
+                !is ? invalid(fi) : valid(fi)
                 info[fi.id] = fi.value
            } else {
             is = false
             invalid(fi)
            }
            return is
+}
+const showErrMsg = (el, msg) => {
+    const label = document.querySelector(`label[for="${el.id}"]`)
+    if (label.children[0]) {
+        label.children[0].remove()
+    }
+        label.innerHTML += `<span class="input-err-msg">${msg}</span>`
+}
+const removeErrMsg = (el) => {
+    const label = document.querySelector(`label[for="${el.id}"]`)
+    if (label.children[0]) {
+        label.children[0].remove()
+    }
 }
 function loadingDotAnime(el) {
     let i = 0
@@ -127,7 +171,6 @@ function loadingDotAnime(el) {
             i++
         }
     }, 200)
-    console.log(interval)
     return interval
 }
 const resend = document.getElementById('resend')
@@ -166,4 +209,17 @@ function startCouter() {
 }
 resend.onclick = (e) => {
     newOtp()
+}
+const unique = document.querySelector('unique')
+async function isExits([type, id]) {
+    const res = await fetch(`/students/check?${type}=${id}`)
+    const response = await res.text()
+    if (response == "exists") {
+        return true
+    } else if (response == "not exists") {
+        return false
+    } else {
+        console.log(response)
+        return false
+    }
 }

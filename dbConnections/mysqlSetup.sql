@@ -48,6 +48,7 @@ create table if not exists department (
 	id int primary key default 1,
     dept_name varchar(255) unique,
     duration int default 3,
+    start_month tinyint default 8, -- August
     hod_id int,
     foreign key (hod_id) references faculties(f_id)
 );
@@ -222,3 +223,4 @@ select * from students;
 select * from faculties;
 select * from department;
 select * from results;
+select * from admin;
