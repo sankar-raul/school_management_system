@@ -49,12 +49,13 @@ form.onsubmit = (event) => {
 }
 previous.onclick = () => {
     if (currentSlideNo <= 0) {
-        previous.style.display = 'hidden'
+        // previous.style.display = 'hidden'
         return
     }
     previous.style.display = 'block'
     slides[currentSlideNo].style.display = 'none'
     slides[--currentSlideNo].style.display = 'flex'
+    slides[currentSlideNo].querySelector('input').focus()
 }
 
 const isChecked = (element) => {
@@ -126,6 +127,7 @@ function loadingDotAnime(el) {
             i++
         }
     }, 200)
+    console.log(interval)
     return interval
 }
 const resend = document.getElementById('resend')
@@ -133,6 +135,7 @@ const counter = document.getElementById('counter')
 counter.style.display = 'none'
 const otpInfo = document.getElementById('otp-info')
 async function newOtp() {
+    if (counterInterval) return
     otpInfo.children[0].innerHTML = `<span>Requesting an OTP<span id="loading-dot-anime"></span></span>`
     var dotInterval = loadingDotAnime(document.getElementById('loading-dot-anime'))
     return new Promise((resolve, reject) => {
@@ -144,20 +147,21 @@ async function newOtp() {
         }, 3000)
     })
 }
-
+var counterInterval
 function startCouter() {
     let count = 30
     otpInfo.children[0].innerHTML = "<span>Otp sent!</span>"
+    counter.innerHTML = "resend after " + count
     counter.style.display = 'block'
     otpInfo.children[2].style.display = 'none'
-    const counterInterval = setInterval(() => {
+    counterInterval = setInterval(() => {
         counter.innerHTML = "resend after " + --count
         }, 1000)
     setTimeout(() => {
         clearInterval(counterInterval)
+        counterInterval = null
         otpInfo.children[2].style.display = 'block'
         counter.style.display = 'none'
-        count = 0
     }, 30000)
 }
 resend.onclick = (e) => {
