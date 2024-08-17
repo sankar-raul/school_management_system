@@ -210,9 +210,16 @@ function startCouter() {
 resend.onclick = (e) => {
     newOtp()
 }
-const unique = document.querySelector('unique')
+const previousRequests = {}
 async function isExits([type, id]) {
-    const res = await fetch(`/students/check?${type}=${id}`)
+    const controller = new AbortController()
+    const signal = controller.signal
+    if (previousRequests[type]) {
+        console.log(previousRequests)
+        previousRequests[type].abort()
+    }
+    previousRequests[type] = controller
+    const res = await fetch(`/students/check?${type}=${id}`, {signal})
     const response = await res.text()
     if (response == "exists") {
         return true
