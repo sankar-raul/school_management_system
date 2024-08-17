@@ -229,7 +229,7 @@ async function isExits([type, id]) {
         console.log(response)
         return false
     }
-} catch (e) {
+} catch (error) {
     if (error.name === 'AbortError') {
         console.log('Previous request aborted:', error);
       } else {
