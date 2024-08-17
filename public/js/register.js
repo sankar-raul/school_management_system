@@ -210,16 +210,16 @@ function startCouter() {
 resend.onclick = (e) => {
     newOtp()
 }
+let controller
 const previousRequests = {}
 async function isExits([type, id]) {
-    const controller = new AbortController()
-    const signal = controller.signal
+    controller = new AbortController()
     if (previousRequests[type]) {
         previousRequests[type].abort("request overlapping abort")
     }
     previousRequests[type] = controller
     try {
-    const res = await fetch(`/students/check?${type}=${id}`, {signal})
+    const res = await fetch(`/students/check?${type}=${id}`, {signal: controller.signal})
     const response = await res.text()
     if (response == "exists") {
         return true
