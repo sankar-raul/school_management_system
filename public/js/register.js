@@ -50,7 +50,7 @@ form.onsubmit = async (event) => {
         }
     }
     }
-    console.log(info) // for development debuging
+    // console.log(info) // for development debuging
 }
 
 
@@ -135,17 +135,27 @@ async function isValid(fi) {
                     default:
                         is = true
                 }
-                if (is && fi.classList.contains("unique")) {
-                    is = !await isExits([fi.id, fi.value])
-                    !is ? showErrMsg(fi, "already exists!") : removeErrMsg(fi)
+                if (fi.classList.contains("unique")) {
+                    removeErrMsg(fi)
+                    if (is) {
+                    is = await isExits([fi.id, fi.value])
+                    if (is == 'abort') {
+                        is = false
+                        return is
+                    } else {
+                        is = !is
+                        !is ? showErrMsg(fi, "already exists!") : removeErrMsg(fi)
+                    }
+                }
                 }
                 !is ? invalid(fi) : valid(fi)
                 info[fi.id] = fi.value
+                return is
            } else {
             is = false
             invalid(fi)
+            return is
            }
-           return is
 }
 const showErrMsg = (el, msg) => {
     const label = document.querySelector(`label[for="${el.id}"]`)
@@ -215,7 +225,7 @@ const previousRequests = {}
 async function isExits([type, id]) {
     controller = new AbortController()
     if (previousRequests[type]) {
-        previousRequests[type].abort("request overlapping abort")
+        previousRequests[type].abort("abort")
     }
     previousRequests[type] = controller
     try {
@@ -227,9 +237,9 @@ async function isExits([type, id]) {
         return false
     } else {
         console.log(response)
-        return false
+        return true
     }
 } catch (error) {
-    // do nothing 😊
+    return "abort"
 }
 }
