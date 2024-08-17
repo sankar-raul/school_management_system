@@ -216,7 +216,7 @@ async function isExits([type, id]) {
     const signal = controller.signal
     if (previousRequests[type]) {
         console.log(previousRequests)
-        previousRequests[type].abort()
+        previousRequests[type].abort("request overlaping abort")
     }
     previousRequests[type] = controller
     const res = await fetch(`/students/check?${type}=${id}`, {signal})
