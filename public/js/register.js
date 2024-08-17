@@ -230,10 +230,6 @@ async function isExits([type, id]) {
         return false
     }
 } catch (error) {
-    if (error.name === 'AbortError') {
-        console.log('Previous request aborted:', error);
-      } else {
-        console.error('Fetch error:', error);
-      }
+    // do nothing 😊
 }
 }
