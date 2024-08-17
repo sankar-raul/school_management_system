@@ -199,7 +199,7 @@ async function newOtp() {
             resolve(true)
         }, 3000)
     })
-}
+} // ok
 var counterInterval
 function startCouter() {
     let count = 30
