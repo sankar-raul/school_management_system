@@ -2,8 +2,10 @@ const db = require('../dbConnections/sqldb')
 const varifyLogin = require('./loginVarify')
 const deleteCookie = require('../functions/deleteCookie')
 const forgotApi = require('./forgotPost')
-const varifyOtpPost = require('./varifyOtpPost')
+const varifyOtpAndChangePass = require('./varifyOtpPost')
 const getAllDept = require('../functions/getAllDept')
+const newOtp = require("../functions/newOtp")
+const varifyOtp = require('../functions/varifyOtp')
 function studentsPage(req, res) {
     if (req.isLogedin && req.u_type == 'student') {
         db.query(`select * from students_dept_view where email = ?`, req.cookies.u_id,(error, result) => {
@@ -27,23 +29,31 @@ const register = async (req, res) => {
     }
     res.render("register", {dept_info})
 }
-const registerPost = (req, res) => {
-    const {name, dept, year, dob, phone, email} = req.query
+const registerPost = async (req, res) => {
+    const {name, dept, year, dob, phone, email, otp} = req.body
     const reg_date = req.headers['client-timestamp']
-    if(name && dept && year && reg_date, dob, phone, email) {
-        db.query("insert into students (s_name, dept_id) values (?, ?, ?, ?, ?)", [name, section, registration_no, dept, roll_no], (error, result) => {
-            if (!error) {
-                res.end("/students")
-            } else {
-                console.log(error)
-                res.status(500).end('data inserting errorerror')
-            }
-        })
-    } else {
-    console.log("please provide all data")
-    res.status(501).json("please provide all data")
+//     if(name && dept && year && reg_date, dob, phone, email) {
+//         db.query("insert into students (s_name, dept_id) values (?, ?, ?, ?, ?)", [name, section, registration_no, dept, roll_no], (error, result) => {
+//             if (!error) {
+//                 res.end("/students")
+//             } else {
+//                 console.log(error)
+//                 res.status(500).end('data inserting errorerror')
+//             }
+//         })
+//     } else {
+//     console.log("please provide all data")
+//     res.status(501).json("please provide all data")
+// }
+const isVarified = await varifyOtp(email, otp)
+if (isVarified == 'expired') {
+    return res.end('expired')
+} else if (isVarified) {
+    return res.end('varified')
+} else {
+    return res.end('not varified')
 }
-  }
+}
 const showStudents = (request, response) => {
     db.query("select * from students", (err, result) => {
         if (err) response.status(501).json(err)
@@ -97,9 +107,6 @@ const forgotPost = async (req, res) => {
     }
     await forgotApi(req, res)
 }
-const varifyOtp = async (req, res) => {
-    await varifyOtpPost(req, res)
-}
 const check = (req, res) => {
     const validTypes = ['email', 'phone']
     const type = validTypes.find((type) => type == Object.keys(req.query)[0])
@@ -118,4 +125,20 @@ const check = (req, res) => {
         res.end('invalid query')
     }
 }
-module.exports = {check, studentsPage, register, registerPost, showStudents, searchStudents, login, loginPost, logout, forgot, forgotPost, varifyOtp}
+const otp = async (req, res) => {
+    const {email} = req.body
+    if (!email) {
+        return res.end("email required")
+    }
+    try {
+    const isSent = await newOtp(email)
+    if (isSent) {
+        return res.end("success")
+    } else {
+        return res.end("failed")
+    }
+    } catch (e) {
+        res.status(500).end(e.message)
+    }
+}
+module.exports = {otp, check, studentsPage, register, registerPost, showStudents, searchStudents, login, loginPost, logout, forgot, forgotPost, varifyOtpAndChangePass}

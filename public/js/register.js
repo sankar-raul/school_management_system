@@ -5,7 +5,7 @@ for (let i of allInput) {
         e.target.focus()
     })
     i.addEventListener('blur', (e) => {
-        isValid(e.target)
+        e.target.id != 'otp' && isValid(e.target)
     })
 }
 const selectOptions = document.querySelectorAll(".select-options")
@@ -36,7 +36,9 @@ form.onsubmit = async (event) => {
     event.preventDefault()
     if (currentSlideNo >= totalSlides-1) {
         res = await varifyAndSubmit()
-        alert(res)
+        if (res) {
+            alert(res)
+        }
         return
     } else {
         const isc = await isChecked(slides[currentSlideNo])
@@ -55,15 +57,55 @@ form.onsubmit = async (event) => {
 
 
 // do it >>>>
-
-const varifyAndSubmit = () => {
-return new Promise((resolve, reject) => {
-    setTimeout(() => {
-        resolve("Done") /// to to do do
-    }, 2000)
-})
+const otpField = document.getElementById('otp')
+const varifyAndSubmit = async () => {
+    if (otp.value.length == 6 && otp.value != info.otp) {
+        info.otp = otp.value
+        try {
+        let res = await vAndSub()
+        if (res == 'varified') {
+            res = true
+            valid(otpField)
+            removeErrMsg(otpField)
+        } else if (res == 'not varified') {
+            res = false
+            invalid(otpField)
+            showErrMsg(otpField, "invalid otp!")
+        } else if (res == "expired") {
+            res = false
+            invalid(otpField)
+            showErrMsg(otpField, "otp expired!")
+        } else {
+            invalid(otpField)
+            alert(res)
+            showErrMsg(otpField, "unexpected error!")
+        }
+        return res;
+    } catch (e) {
+        return false
+    }
+    } else {
+        invalid(otpField)
+        showErrMsg(otpField, "invalid otp!")
+        return false
+    }
 }
-
+let vAndSubController = null
+const vAndSub = async () => {
+    if (vAndSubController) {
+        vAndSubController.abort("overlap")
+    }
+    vAndSubController = new AbortController()
+    const isDone = await fetch(`/students/register`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(info),
+        signal: vAndSubController.signal
+    })
+    return isDone.text()
+}
 
 previous.onclick = () => {
     if (currentSlideNo <= 0) {
@@ -135,25 +177,54 @@ async function isValid(fi) {
                     default:
                         is = true
                 }
+                let flag = null
+                if (is) {
                 if (fi.classList.contains("unique")) {
-                    removeErrMsg(fi)
-                    if (is) {
+                    if (fi.value != info[fi.id]) {
+    
                     is = await isExits([fi.id, fi.value])
+                    removeErrMsg(fi)
                     if (is == 'abort') {
                         is = false
                         return is
                     } else {
                         is = !is
-                        !is ? showErrMsg(fi, "already exists!") : removeErrMsg(fi)
+                        if (!is) {
+                            showErrMsg(fi, "already exists!")
+                            flag = true
+                        } else {
+                            removeErrMsg(fi)
+                            flag = false
+                        }
+                    }
+                } else {
+                    const label = document.querySelector(`label[for="${fi.id}"]`)
+                    if (label.children[0]) {
+                        showErrMsg(fi, "already exists!")
+                        flag = true
+                        is = false
+                    } else {
+                        is = true
+                        flag = false
                     }
                 }
                 }
-                !is ? invalid(fi) : valid(fi)
+            }
+                if (!is) {
+                    if (!flag) {
+                        showErrMsg(fi, `invalid ${fi.id}!`)
+                    }
+                    invalid(fi)
+                } else {
+                    removeErrMsg(fi)
+                    valid(fi)
+                }
                 info[fi.id] = fi.value
                 return is
            } else {
             is = false
             invalid(fi)
+            showErrMsg(fi, `invalid ${fi.id}!`)
             return is
            }
 }
@@ -192,16 +263,35 @@ async function newOtp() {
     otpInfo.children[0].innerHTML = `<span>Requesting an OTP<span id="loading-dot-anime"></span></span>`
     var dotInterval = loadingDotAnime(document.getElementById('loading-dot-anime'))
     return new Promise((resolve, reject) => {
+        otpTimesout = 'not null'
         otpInfo.children[2].style.display = 'none'
-        setTimeout(() => {
-            startCouter()
-            clearInterval(dotInterval)
-            resolve(true)
-        }, 3000)
-    })
+        fetch("/students/otp", {
+            method: "POST",
+            headers: {
+                'Content-Type': "application/json"
+            },
+            body: JSON.stringify({email: info.email})
+        }).then((data) => data.text())
+        .then(msg => {
+            if (msg == 'success') {
+                startCouter()
+                resolve(true)
+            } else if (msg == 'failed') {
+                startCouter({failed: true})
+                resolve(false)
+            } else {
+                startCouter({failed: true})
+                console.log("registration", msg)
+                resolve(false)
+            }
+        })
+    }) //// / gb/ / g/ /t// s
 } // ok
-var counterInterval
-function startCouter() {
+var counterInterval, otpTimesout = null
+function startCouter(flag) {
+    const isFailed = flag ? flag.failed ? true : false : false
+    if (!isFailed) {
+        console.log(isFailed)
     let count = 30
     otpInfo.children[0].innerHTML = "<span>Otp sent!</span>"
     counter.innerHTML = "resend after " + count
@@ -210,15 +300,22 @@ function startCouter() {
     counterInterval = setInterval(() => {
         counter.innerHTML = "resend after " + --count
         }, 1000)
-    setTimeout(() => {
+    otpTimesout = setTimeout(() => {
         clearInterval(counterInterval)
         counterInterval = null
         otpInfo.children[2].style.display = 'block'
         counter.style.display = 'none'
+        otpTimesout = null
     }, 30000)
+} else {
+    otpInfo.children[0].innerHTML = "<span>Otp not sent!</span>"
+    otpInfo.children[2].style.display = 'block'
+}
 }
 resend.onclick = (e) => {
-    newOtp()
+    if (otpTimesout == null) {
+        newOtp()
+    }
 }
 let controller
 const previousRequests = {}

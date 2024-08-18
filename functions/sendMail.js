@@ -9,10 +9,10 @@ const sendMail = (data, subject = null) => {
                 from: 'sankar@sankar.tech',
                 to: data.email,
                 subject: subject,
-                html: `<h1>Your otp is ${data.otp}</h1>`
+                html: `<h1>${subject} ${data.otp}</h1>`
             }, (error, info) => {
                 if (error) {
-                    console.error(error)
+                    console.log(error)
                     reject(false)
                 } else {
                     resolve(true)
