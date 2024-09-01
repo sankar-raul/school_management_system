@@ -14,6 +14,10 @@ html {
     --secondery-btn-color: #121212dd;
     --primary-btn-bg: #121212dd;
 }
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 100px var(--theme-color) inset;
+    -webkit-text-fill-color: var(--primary-text-color);
+}
 ::spelling-error {
     text-decoration: none;
 }
